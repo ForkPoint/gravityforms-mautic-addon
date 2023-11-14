@@ -111,7 +111,7 @@ class Gragrid extends GFFeedAddOn {
 	 * @access protected
 	 * @var    string $_short_title The short title.
 	 */
-	protected $_short_title = 'SendGrid';
+	protected $_short_title = 'Mautic';
 
 	/**
 	 * Contains an instance of the SendGrid API library.
@@ -131,7 +131,7 @@ class Gragrid extends GFFeedAddOn {
 	public function __construct() {
 		parent::__construct();
 
-		$this->_title = esc_html__( 'Gravity Forms: SendGrid Add-on', 'gragrid' );
+		$this->_title = esc_html__( 'Gravity Forms: Mautic Add-on', 'gragrid' );
 	}
 
 	/**
@@ -180,25 +180,32 @@ class Gragrid extends GFFeedAddOn {
 	public function plugin_settings_fields() {
 		return array(
 			array(
-				'description' => sprintf(
-					'<p>%s</p>',
-					sprintf(
-						// Translators: 1 open anchor tag, 2 close anchor tag, 3 open anchor tag, 4 close anchor tag.
-						esc_html__( 'SendGrid makes it easy to reliably send email notifications. If you don\'t have a SendGrid account, you can %1$ssign up for one here%2$s. Once you have signed up, you can %3$sfind your API keys here%4$s.', 'gragrid' ),
-						'<a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer">',
-						'</a>',
-						'<a href="https://app.sendgrid.com/settings/api_keys" target="_blank" rel="noopener noreferrer">',
-						'</a>'
-					)
-				),
+				// 'description' => sprintf(
+				// 	'<p>%s</p>',
+				// 	sprintf(
+				// 		// Translators: 1 open anchor tag, 2 close anchor tag, 3 open anchor tag, 4 close anchor tag.
+				// 		esc_html__( 'SendGrid makes it easy to reliably send email notifications. If you don\'t have a SendGrid account, you can %1$ssign up for one here%2$s. Once you have signed up, you can %3$sfind your API keys here%4$s.', 'gragrid' ),
+				// 		'<a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer">',
+				// 		'</a>',
+				// 		'<a href="https://app.sendgrid.com/settings/api_keys" target="_blank" rel="noopener noreferrer">',
+				// 		'</a>'
+				// 	)
+				// ),
 				'fields'      => array(
 					array(
-						'name'              => 'api_key',
-						'label'             => esc_html__( 'SendGrid API Key', 'gragrid' ),
+						'name'              => 'mautic_username',
+						'label'             => esc_html__( 'Mautic Username', 'gragrid' ),
 						'type'              => 'text',
 						'class'             => 'medium',
 						'feedback_callback' => array( $this, 'init_api' ),
 					),
+					array(
+						'name'              => 'mautic_password',
+						'label'             => esc_html__( 'Mautic Password', 'gragrid' ),
+						'type'              => 'text',
+						'class'             => 'medium',
+						'feedback_callback' => array( $this, 'init_api' ),
+					)
 				),
 			),
 		);
@@ -231,7 +238,7 @@ class Gragrid extends GFFeedAddOn {
 				'tooltip'   => sprintf(
 					'<h6>%s</h6>%s',
 					esc_html__( 'Custom Fields', 'gragrid' ),
-					esc_html__( 'Associate your custom SendGrid fields to the appropriate Gravity Form fields by selecting the appropriate form field from the list.', 'gragrid' )
+					esc_html__( 'Associate your custom Mautic fields to the appropriate Gravity Form fields by selecting the appropriate form field from the list.', 'gragrid' )
 				),
 			);
 		}
@@ -251,13 +258,13 @@ class Gragrid extends GFFeedAddOn {
 			),
 			array(
 				'name'     => 'sendgrid_list',
-				'label'    => esc_html__( 'SendGrid Contact List', 'gragrid' ),
+				'label'    => esc_html__( 'Mautic Segment List', 'gragrid' ),
 				'type'     => 'sendgrid_list',
 				'required' => true,
 				'tooltip'  => sprintf(
 					'<h6>%s</h6>%s',
-					esc_html__( 'SendGrid Contact List', 'gragrid' ),
-					esc_html__( 'Select the contact list you would like to add emails s to.', 'gragrid' )
+					esc_html__( 'Mautic Segment List', 'gragrid' ),
+					esc_html__( 'Select the segment list you would like to add contacts to.', 'gragrid' )
 				),
 			),
 			array(
@@ -268,7 +275,7 @@ class Gragrid extends GFFeedAddOn {
 				'tooltip'   => sprintf(
 					'<h6>%s</h6>%s',
 					esc_html__( 'Map Fields', 'gragrid' ),
-					esc_html__( 'Associate the SendGrid fields to the appropriate Gravity Form fields by selecting the appropriate form field from the list.', 'gragrid' )
+					esc_html__( 'Associate the Mautic fields to the appropriate Gravity Form fields by selecting the appropriate form field from the list.', 'gragrid' )
 				),
 			),
 			$custom_field_map,
@@ -277,14 +284,14 @@ class Gragrid extends GFFeedAddOn {
 				'name'           => 'enabled',
 				'label'          => esc_html__( 'Conditional logic', 'gragrid' ),
 				'checkbox_label' => esc_html__( 'Enable', 'gragrid' ),
-				'instructions'   => esc_html__( 'Send this lead to SendGrid if', 'gragrid' ),
+				'instructions'   => esc_html__( 'Send this lead to Mautic if', 'gragrid' ),
 			),
 			array( 'type' => 'save' ),
 		);
 
 		$settings = array(
 			array(
-				'title'  => esc_html__( 'SendGrid Feed Settings', 'gragrid' ),
+				'title'  => esc_html__( 'Mautic Feed Settings', 'gragrid' ),
 				'fields' => array_filter( $fields ),
 			),
 		);
@@ -307,7 +314,7 @@ class Gragrid extends GFFeedAddOn {
 			return;
 		}
 
-		$lists = $this->api->get_lists();
+		$lists = $this->api->get_segments()['body'];
 
 		if ( is_wp_error( $lists ) ) {
 			$this->log_error( __METHOD__ . ': Could not retrieve the contact lists ' . $lists->get_error_message() );
@@ -318,7 +325,7 @@ class Gragrid extends GFFeedAddOn {
 			);
 		}
 
-		if ( ! count( $lists['result'] ) > 0 ) {
+		if ( ! count( $lists['lists'] ) > 0 ) {
 			$this->log_error( __METHOD__ . ': API retured empty set of lists.' );
 
 			printf( esc_html__( 'You don\'t have contact lists in your account. Please create one first and try again.', 'gragrid' ) );
@@ -329,14 +336,14 @@ class Gragrid extends GFFeedAddOn {
 		// Initialize select options.
 		$options = array(
 			array(
-				'label' => esc_html__( 'Select a SendGrid list', 'gragrid' ),
+				'label' => esc_html__( 'Select a Mautic list', 'gragrid' ),
 				'value' => '',
 			),
 		);
 
-		foreach ( $lists['result'] as $list ) {
+		foreach ( $lists['lists'] as $list ) {
 			$options[] = array(
-				'label' => esc_html( $list['name'] . ' (' . $list['contact_count'] . ')' ),
+				'label' => esc_html( $list['name'] . ' (' . $list['alias'] . ')' ),
 				'value' => esc_attr( $list['id'] ),
 			);
 
@@ -375,83 +382,23 @@ class Gragrid extends GFFeedAddOn {
 				'field_type' => array( 'email', 'hidden' ),
 			),
 			'first_name'            => array(
-				'name'       => 'first_name',
+				'name'       => 'firstname',
 				'label'      => esc_html__( 'First Name', 'gragrid' ),
 				'required'   => false,
 				'field_type' => array( 'name', 'text', 'hidden' ),
 			),
 			'last_name'             => array(
-				'name'       => 'last_name',
+				'name'       => 'lastname',
 				'label'      => esc_html__( 'Last Name', 'gragrid' ),
 				'required'   => false,
 				'field_type' => array( 'name', 'text', 'hidden' ),
 			),
-			'phone_number'          => array(
-				'name'       => 'phone_number',
-				'label'      => esc_html__( 'Phone Number', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'phone', 'text', 'hidden' ),
-			),
-			'address_line_1'        => array(
-				'name'       => 'address_line_1',
-				'label'      => esc_html__( 'Address Line 1', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'address', 'text', 'hidden' ),
-			),
-			'address_line_2'        => array(
-				'name'       => 'address_line_2',
-				'label'      => esc_html__( 'Address Line 2', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'address', 'text', 'hidden' ),
-			),
-			'city'                  => array(
-				'name'       => 'city',
-				'label'      => esc_html__( 'City', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'address', 'text', 'hidden' ),
-			),
-			'state_province_region' => array(
-				'name'       => 'state_province_region',
-				'label'      => esc_html__( 'State/Province/Region', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'address', 'text', 'hidden' ),
-			),
-			'postal_code'           => array(
-				'name'       => 'postal_code',
-				'label'      => esc_html__( 'Postal Code', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'address', 'text', 'hidden' ),
-			),
-			'country'               => array(
-				'name'       => 'country',
-				'label'      => esc_html__( 'Country', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'address', 'text', 'hidden' ),
-			),
-			'whatsapp'              => array(
-				'name'       => 'whatsapp',
-				'label'      => esc_html__( 'WhatsApp', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'phone', 'text', 'hidden' ),
-			),
-			'line'                  => array(
-				'name'       => 'line',
-				'label'      => esc_html__( 'Line', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'phone', 'text', 'hidden' ),
-			),
-			'facebook'              => array(
-				'name'       => 'facebook',
-				'label'      => esc_html__( 'Facebook', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'website', 'text', 'hidden' ),
-			),
-			'unique_name'           => array(
-				'name'       => 'unique_name',
-				'label'      => esc_html__( 'Unique Name', 'gragrid' ),
-				'required'   => false,
-				'field_type' => array( 'name', 'text', 'hidden' ),
-			),
+			// 'unique_name'           => array(
+			// 	'name'       => 'unique_name',
+			// 	'label'      => esc_html__( 'Unique Name', 'gragrid' ),
+			// 	'required'   => false,
+			// 	'field_type' => array( 'name', 'text', 'hidden' ),
+			// ),
 		);
 	}
 
@@ -517,7 +464,7 @@ class Gragrid extends GFFeedAddOn {
 	public function feed_list_columns() {
 		return array(
 			'feedName'      => esc_html__( 'Name', 'gragrid' ),
-			'sendgrid_list' => esc_html__( 'SendGrid List', 'gragrid' ),
+			'sendgrid_list' => esc_html__( 'Selected Mautic Segment', 'gragrid' ),
 		);
 	}
 
@@ -534,7 +481,7 @@ class Gragrid extends GFFeedAddOn {
 			return rgars( $feed, 'meta/sendgrid_list' );
 		}
 
-		$list = $this->api->get_list( rgars( $feed, 'meta/sendgrid_list' ) );
+		$list = $this->api->get_segment( rgars( $feed, 'meta/sendgrid_list' ) );
 
 		if ( is_wp_error( $list ) ) {
 			$this->log_error( __METHOD__ . ': Could not retrieve the contact list: ' . $list->get_error_message() );
@@ -542,7 +489,7 @@ class Gragrid extends GFFeedAddOn {
 			return rgars( $feed, 'meta/sendgrid_list' );
 		}
 
-		return $list['name'];
+		return $list['list']['name'];
 	}
 
 	// # FEED PROCESSING -----------------------------------------------------------------------------------------------
@@ -567,6 +514,10 @@ class Gragrid extends GFFeedAddOn {
 
 		$contact = array();
 
+		$segment = $this->api->get_segment( rgars( $feed, 'meta/sendgrid_list' ) );
+
+		$segment_id = $segment['list']['id'];
+
 		// Map reserved/standard/default fields.
 		$fields = $this->get_field_map_fields( $feed, 'mappedFields' );
 
@@ -574,38 +525,16 @@ class Gragrid extends GFFeedAddOn {
 			$contact[ $name ] = $this->get_field_value( $form, $entry, $field_id );
 		}
 
-		// Map custom fields.
-		$custom_fields = $this->get_field_map_fields( $feed, 'mappedCustomFields' );
-
-		foreach ( $custom_fields as $name => $field_id ) {
-			$contact['custom_fields'][ $name ] = $this->get_field_value( $form, $entry, $field_id );
-		}
-
-		$contact_params = array(
-			'list_ids' => array( rgars( $feed, 'meta/sendgrid_list' ) ),
-			'contacts' => array( $contact ),
-		);
-
-		/**
-		 * Contact parameters
-		 *
-		 * @since 2.1.0
-		 *
-		 * @param array $contact_params Contact parameters.
-		 * @param array $entry          The entry object currently being processed.
-		 * @param array $form           The form object currently being processed.
-		 */
-		$contact_params = apply_filters( 'gragrid_contact_params', $contact_params, $entry, $form );
-
 		try {
 			// Save the contacts.
-			$response = $this->api->add_contacts( $contact_params );
+			$response = $this->api->create_contact( $contact );
+
+			$contact_id = $response['contact']['id'];
+
+			$this->api->add_contact_to_segment($segment_id, $contact_id);
 
 			if ( is_wp_error( $response ) ) {
-				// Translators: %s error message.
-				$this->add_feed_error( sprintf( esc_html__( 'Unable to add the contact: %s', 'gragrid' ), $response->get_error_message() ), $feed, $entry, $form );
-
-				return $entry;
+				return null;
 			}
 
 			$this->add_note(
@@ -640,40 +569,40 @@ class Gragrid extends GFFeedAddOn {
 	 * @uses Gragrid_API::valid_key()
 	 *
 	 * @access public
-	 * @param string $api_key SendGrid API key.
+	 * @param string $api_key Mautic Public API key.
+	 * @param string $private_key Mautic Private API key.
+	 * @param string $redirect_url Mautic Redirect URL.
 	 * @return bool|null
 	 */
-	public function init_api( $api_key = null ) {
+	public function init_api( $mautic_username = null, $mautic_password = null) {
 		// If the API is already initialized, return true.
 		if ( ! is_null( $this->api ) ) {
 			return true;
 		}
 
-		if ( rgblank( $api_key ) ) {
-			$api_key = $this->get_plugin_setting( 'api_key' );
-		}
+		$mautic_username = $this->get_plugin_setting( 'mautic_username' );
+		$mautic_password = $this->get_plugin_setting( 'mautic_password' );
 
-		// If the API key is blank, do not run a validation check.
-		if ( rgblank( $api_key ) ) {
+		if ( rgblank( $mautic_username ) || rgblank( $mautic_password )) {
 			return null;
 		}
 
 		$this->log_debug( __METHOD__ . '(): Validating API key.' );
 
 		try {
-			$this->api = new Gragrid_API( $api_key );
+			$this->api = new Gragrid_API( $mautic_username, $mautic_password );
 
 			if ( $this->api->valid_key() ) {
-				$this->log_debug( __METHOD__ . '(): SendGrid successfully authenticated.' );
+				$this->log_debug( __METHOD__ . '(): Mautic successfully authenticated.' );
 
 				return true;
 			} else {
-				$this->log_debug( __METHOD__ . '(): Unable to authenticate with SendGrid.' );
+				$this->log_debug( __METHOD__ . '(): Unable to authenticate with Mautic.' );
 
 				return false;
 			}
 		} catch ( Exception $e ) {
-			$this->log_error( __METHOD__ . '(): Unable to authenticate with SendGrid; ' . $e->getMessage() );
+			$this->log_error( __METHOD__ . '(): Unable to authenticate with Mautic; ' . $e->getMessage() );
 
 			return false;
 		}

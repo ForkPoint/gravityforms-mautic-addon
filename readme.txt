@@ -1,4 +1,4 @@
-=== Gragrid: Gravity Forms + SendGrid ===
+=== Grautic: Gravity Forms + Mautic ===
 Contributors: vlass
 Donate link: https://github.com/vlasscontreras/gragrid
 Tags: forms, emails, subscribers, sendgrid, gravity forms
@@ -9,7 +9,7 @@ Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Integrates Gravity Forms with SendGrid, allowing form submissions to be automatically sent to your SendGrid contact lists.
+Integrates Gravity Forms with Mautic, allowing form submissions to be automatically sent to your Mautic contact list and segments.
 
 == Description ==
 

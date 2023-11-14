@@ -1,56 +1,27 @@
 <?php
-/**
- * Gravity Forms SendGrid API Library
- *
- * @since 1.0.0
- *
- * @package Gragrid
- * @author  Vladimir Contreras
- */
 
-/**
- * Gravity Forms SendGrid API Library.
- *
- * @since 1.0.0
- *
- * @package Gragrid
- * @author  Vladimir Contreras
- */
 class Gragrid_API {
-	/**
-	 * SendGrid API key.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @access protected
-	 * @var    string $api_key SendGrid account API key.
-	 */
-	protected $api_key;
 
-	/**
-	 * Initialize API library.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @access public
-	 * @param string $api_key SendGrid API key.
-	 */
-	public function __construct( $api_key = '' ) {
-		$this->api_key = $api_key;
+	protected $mautic_username;
+	protected $mautic_password;
+
+	public function __construct( $mautic_username = '', $mautic_password = '') {
+		$this->mautic_username = $mautic_username;
+		$this->mautic_password = $mautic_password;
 	}
 
 	/**
-	 * Get all SendGrid contact lists.
+	 * Get all Mautic segments.
 	 *
 	 * @since 1.0.0
-	 * @since 2.2.2 Added the page_size parameter to SendGrid's maximum.
+	 * @since 2.2.2 Added the page_size parameter to Mautic's maximum.
 	 *
 	 * @access public
 	 * @return array|WP_Error
 	 */
-	public function get_lists() {
+	public function get_segments() {
 		$response = $this->request(
-			'/marketing/lists',
+			'segments',
 			array( 'page_size' => 1000 )
 		);
 
@@ -58,25 +29,25 @@ class Gragrid_API {
 			return $this->set_error( $response );
 		}
 
-		return $response['body'];
+		return $response;
 	}
 
 	/**
-	 * Get a SendGrid contact list.
+	 * Get a Mautic segment.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @access public
-	 * @param int $list_id SendGrid contact list ID.
+	 * @param int $segment_id Mautic segment ID.
 	 * @return array|WP_Error
 	 */
-	public function get_list( $list_id ) {
-		$response = $this->request( '/marketing/lists/' . $list_id );
-
-		if ( ! $this->is_valid_response( $response, 200 ) ) {
-			return $this->set_error( $response );
+	public function get_segment( $segment_id ) {
+		$response = $this->request('segments/' . $segment_id);
+	
+		if (!$this->is_valid_response($response, 200)) {
+			return $this->set_error($response);
 		}
-
+	
 		return $response['body'];
 	}
 
@@ -107,14 +78,14 @@ class Gragrid_API {
 	 * @param array $params Request parameters.
 	 * @return array|WP_Error
 	 */
-	public function add_contacts( $params ) {
-		$response = $this->request( '/marketing/contacts', $params, 'PUT' );
+	public function create_contact( $params ) {
+		$response = $this->request( 'contacts/new', $params, 'POST' );
 
-		if ( ! $this->is_valid_response( $response, 202 ) ) {
-			return $this->set_error( $response );
+		if ( $this->is_valid_response( $response, 200 ) || $this->is_valid_response( $response, 201 ) ) {
+			return $response['body'];
 		}
 
-		return $response['body'];
+		return $this->set_error( $response );
 	}
 
 	/**
@@ -125,7 +96,7 @@ class Gragrid_API {
 	 * @return bool
 	 */
 	public function valid_key() {
-		return ! is_wp_error( $this->get_lists() );
+		return ! is_wp_error( $this->get_segments() );
 	}
 
 	/**
@@ -140,11 +111,11 @@ class Gragrid_API {
 	 * @return array
 	 */
 	private function request( $path = '', $data = array(), $method = 'GET' ) {
-		if ( rgblank( $this->api_key ) ) {
+		if ( rgblank( $this->mautic_username ) ) {
 			return new WP_Error( __METHOD__, esc_html__( 'API key must be defined to process an API request.', 'gragrid' ) );
 		}
 
-		$request_url = 'https://api.sendgrid.com/v3' . $path;
+		$request_url = 'https://hello.forkpoint.com/api/' . $path;
 
 		// Add request URL parameters if needed.
 		if ( 'GET' === $method && ! empty( $data ) ) {
@@ -156,7 +127,7 @@ class Gragrid_API {
 			'method'   => $method,
 			'headers'  => array(
 				'Accept'        => 'application/json',
-				'Authorization' => 'Bearer ' . $this->api_key,
+				'Authorization' => 'Basic ' . base64_encode($this->mautic_username . ':' . $this->mautic_password),
 				'Content-Type'  => 'application/json',
 			),
 		);
@@ -175,7 +146,7 @@ class Gragrid_API {
 		 * @param string $path The request path.
 		 * @return array
 		 */
-		$args = apply_filters( 'gragrid_request_args', $args, $path );
+		// $args = apply_filters( 'gragrid_request_args', $args, $path );
 
 		// Execute request.
 		$response = wp_remote_request( $request_url, $args );
@@ -225,5 +196,15 @@ class Gragrid_API {
 		} else {
 			return new WP_Error( __METHOD__, $response );
 		}
+	}
+
+	public function add_contact_to_segment( $segmentId, $contact_id) {
+		$response = $this->request( 'segments/' . $segmentId . '/contact/' . $contact_id . '/add', array(), 'POST' );
+
+		if ( ! $this->is_valid_response( $response, 200 ) ) {
+			return $this->set_error( $response );
+		}
+
+		return $response['body'];
 	}
 }
