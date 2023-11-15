@@ -1,14 +1,4 @@
 <?php
-/**
- * The SendGrid Add-on
- *
- * phpcs:disable PSR2.Classes.PropertyDeclaration.Underscore
- *
- * @since 1.0.0
- *
- * @package Gragrid
- * @author  Vladimir Contreras
- */
 
 GFForms::include_feed_addon_framework();
 
@@ -375,30 +365,48 @@ class Gragrid extends GFFeedAddOn {
 	 */
 	public function sengrid_field_map() {
 		return array(
-			'email'                 => array(
+			'email' => array(
 				'name'       => 'email',
-				'label'      => esc_html__( 'Email Address', 'gragrid' ),
-				'required'   => true,
-				'field_type' => array( 'email', 'hidden' ),
+				'label'      => esc_html__('Email Address', 'gragrid'),
+				'required'   => false,
+				'field_type' => array('email', 'hidden'),
 			),
-			'first_name'            => array(
+			'first_name' => array(
 				'name'       => 'firstname',
-				'label'      => esc_html__( 'First Name', 'gragrid' ),
+				'label'      => esc_html__('First Name', 'gragrid'),
 				'required'   => false,
-				'field_type' => array( 'name', 'text', 'hidden' ),
+				'field_type' => array('name', 'text', 'hidden'),
 			),
-			'last_name'             => array(
+			'last_name' => array(
 				'name'       => 'lastname',
-				'label'      => esc_html__( 'Last Name', 'gragrid' ),
+				'label'      => esc_html__('Last Name', 'gragrid'),
 				'required'   => false,
-				'field_type' => array( 'name', 'text', 'hidden' ),
+				'field_type' => array('name', 'text', 'hidden'),
 			),
-			// 'unique_name'           => array(
-			// 	'name'       => 'unique_name',
-			// 	'label'      => esc_html__( 'Unique Name', 'gragrid' ),
-			// 	'required'   => false,
-			// 	'field_type' => array( 'name', 'text', 'hidden' ),
-			// ),
+			'phone_number'   => array(
+				'name'       => 'phone',
+				'label'      => esc_html__( 'Phone Number', 'gragrid' ),
+				'required'   => false,
+				'field_type' => array( 'phone', 'text', 'hidden' ),
+			),
+			'checkbox' => array(
+				'name'       => 'checkbox',
+				'label'      => esc_html__('Checkbox', 'gragrid'),
+				'required'   => false,
+				'field_type' => array('checkbox'),
+			),
+			'radio' => array(
+				'name'       => 'radio',
+				'label'      => esc_html__('Radio Button', 'gragrid'),
+				'required'   => false,
+				'field_type' => array('radio'),
+			),
+			'dropdown' => array(
+				'name'       => 'dropdown',
+				'label'      => esc_html__('Dropdown', 'gragrid'),
+				'required'   => false,
+				'field_type' => array('select'),
+			)
 		);
 	}
 
