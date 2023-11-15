@@ -52,7 +52,7 @@ class Gragrid_API {
 	}
 
 	/**
-	 * Get SendGrid custom fields.
+	 * Get Mautic custom fields.
 	 *
 	 * @since 2.1.0
 	 *
@@ -100,7 +100,7 @@ class Gragrid_API {
 	}
 
 	/**
-	 * Process SendGrid API request.
+	 * Process Mautic API request.
 	 *
 	 * @since 1.0.0
 	 *
@@ -136,17 +136,6 @@ class Gragrid_API {
 		if ( 'GET' !== $method ) {
 			$args['body'] = wp_json_encode( $data );
 		}
-
-		/**
-		 * Filters the SendGrid request arguments.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param array  $args The request arguments sent to SendGrid.
-		 * @param string $path The request path.
-		 * @return array
-		 */
-		// $args = apply_filters( 'gragrid_request_args', $args, $path );
 
 		// Execute request.
 		$response = wp_remote_request( $request_url, $args );

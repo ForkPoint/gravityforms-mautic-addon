@@ -5,7 +5,7 @@ GFForms::include_feed_addon_framework();
 require_once 'includes/concerns/class-gragrid-converts-case.php';
 
 /**
- * The SendGrid Add-on Class
+ * The Mautic Add-on Class
  *
  * @since 1.0.0
  * @author  Vladimir Contreras
@@ -24,7 +24,7 @@ class Gragrid extends GFFeedAddOn {
 	private static $_instance = null;
 
 	/**
-	 * Defines the version of the SendGrid Add-On.
+	 * Defines the version of the Mautic Add-On.
 	 *
 	 * @since 1.0.0
 	 *
@@ -104,12 +104,12 @@ class Gragrid extends GFFeedAddOn {
 	protected $_short_title = 'Mautic';
 
 	/**
-	 * Contains an instance of the SendGrid API library.
+	 * Contains an instance of the Mautic API library.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @access protected
-	 * @var    Gragrid_API|null $api Contains an instance of the SendGrid API library.
+	 * @var    Gragrid_API|null $api Contains an instance of the Mautic API library.
 	 */
 	protected $api = null;
 
@@ -170,17 +170,6 @@ class Gragrid extends GFFeedAddOn {
 	public function plugin_settings_fields() {
 		return array(
 			array(
-				// 'description' => sprintf(
-				// 	'<p>%s</p>',
-				// 	sprintf(
-				// 		// Translators: 1 open anchor tag, 2 close anchor tag, 3 open anchor tag, 4 close anchor tag.
-				// 		esc_html__( 'SendGrid makes it easy to reliably send email notifications. If you don\'t have a SendGrid account, you can %1$ssign up for one here%2$s. Once you have signed up, you can %3$sfind your API keys here%4$s.', 'gragrid' ),
-				// 		'<a href="https://sendgrid.com" target="_blank" rel="noopener noreferrer">',
-				// 		'</a>',
-				// 		'<a href="https://app.sendgrid.com/settings/api_keys" target="_blank" rel="noopener noreferrer">',
-				// 		'</a>'
-				// 	)
-				// ),
 				'fields'      => array(
 					array(
 						'name'              => 'mautic_username',
@@ -247,9 +236,9 @@ class Gragrid extends GFFeedAddOn {
 				),
 			),
 			array(
-				'name'     => 'sendgrid_list',
+				'name'     => 'mautic_segment_list',
 				'label'    => esc_html__( 'Mautic Segment List', 'gragrid' ),
-				'type'     => 'sendgrid_list',
+				'type'     => 'mautic_segment_list',
 				'required' => true,
 				'tooltip'  => sprintf(
 					'<h6>%s</h6>%s',
@@ -290,7 +279,7 @@ class Gragrid extends GFFeedAddOn {
 	}
 
 	/**
-	 * Define the markup for the sendgrid_list type field.
+	 * Define the markup for the mautic_segment_list type field.
 	 *
 	 * @since 1.0.0
 	 *
@@ -299,7 +288,7 @@ class Gragrid extends GFFeedAddOn {
 	 * @param bool  $echo  Should the setting markup be echoed. Defaults to true.
 	 * @return string
 	 */
-	public function settings_sendgrid_list( $field, $echo = true ) {
+	public function settings_mautic_segment_list( $field, $echo = true ) {
 		if ( ! $this->init_api() ) {
 			return;
 		}
@@ -354,11 +343,9 @@ class Gragrid extends GFFeedAddOn {
 	}
 
 	/**
-	 * Return an array of SendGrid list/audience fields which can be mapped to the Form fields/entry meta.
+	 * Return an array of Mautic contact fields which can be mapped to the Form fields/entry meta.
 	 *
 	 * @since 1.0.0
-	 * @since 2.0.0 Added address fields.
-	 * @since 2.1.0 Added more default SendGrid fields.
 	 *
 	 * @access public
 	 * @return array
@@ -411,7 +398,7 @@ class Gragrid extends GFFeedAddOn {
 	}
 
 	/**
-	 * Map custom SendGrid fields
+	 * Map custom Mautic fields
 	 *
 	 * @since 2.1.0
 	 *
@@ -472,29 +459,29 @@ class Gragrid extends GFFeedAddOn {
 	public function feed_list_columns() {
 		return array(
 			'feedName'      => esc_html__( 'Name', 'gragrid' ),
-			'sendgrid_list' => esc_html__( 'Selected Mautic Segment', 'gragrid' ),
+			'mautic_segment_list' => esc_html__( 'Selected Mautic Segment', 'gragrid' ),
 		);
 	}
 
 	/**
-	 * Get the name of the SendGrid list for the feed table view.
+	 * Get the name of the Mautic segment for the feed table view.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param array $feed The feed being included in the feed list.
 	 * @return string
 	 */
-	public function get_column_value_sendgrid_list( $feed ) {
+	public function get_column_value_mautic_segment_list( $feed ) {
 		if ( ! $this->init_api() ) {
-			return rgars( $feed, 'meta/sendgrid_list' );
+			return rgars( $feed, 'meta/mautic_segment_list' );
 		}
 
-		$list = $this->api->get_segment( rgars( $feed, 'meta/sendgrid_list' ) );
+		$list = $this->api->get_segment( rgars( $feed, 'meta/mautic_segment_list' ) );
 
 		if ( is_wp_error( $list ) ) {
 			$this->log_error( __METHOD__ . ': Could not retrieve the contact list: ' . $list->get_error_message() );
 
-			return rgars( $feed, 'meta/sendgrid_list' );
+			return rgars( $feed, 'meta/mautic_segment_list' );
 		}
 
 		return $list['list']['name'];
@@ -522,7 +509,7 @@ class Gragrid extends GFFeedAddOn {
 
 		$contact = array();
 
-		$segment = $this->api->get_segment( rgars( $feed, 'meta/sendgrid_list' ) );
+		$segment = $this->api->get_segment( rgars( $feed, 'meta/mautic_segment_list' ) );
 
 		$segment_id = $segment['list']['id'];
 
@@ -548,9 +535,9 @@ class Gragrid extends GFFeedAddOn {
 			$this->add_note(
 				$entry['id'],
 				sprintf(
-					// Translators: %s SendGrid list ID.
-					esc_html__( 'Gragrid successfully passed the lead details to the SendGrid list #%s.', 'gragrid' ),
-					rgars( $feed, 'meta/sendgrid_list' )
+					// Translators: %s Mautic segment ID.
+					esc_html__( 'Gragrid successfully passed the lead details to the Mautic segment list #%s.', 'gragrid' ),
+					rgars( $feed, 'meta/mautic_segment_list' )
 				),
 				'success'
 			);
@@ -558,7 +545,7 @@ class Gragrid extends GFFeedAddOn {
 			return $entry;
 		} catch ( Exception $e ) {
 			// Translators: %s error message.
-			$this->add_feed_error( sprintf( esc_html__( 'Unable to add recipient to list: %s', 'gragrid' ), $e->getMessage() ), $feed, $entry, $form );
+			$this->add_feed_error( sprintf( esc_html__( 'Unable to add recipient to segment: %s', 'gragrid' ), $e->getMessage() ), $feed, $entry, $form );
 
 			return $entry;
 		}
@@ -567,7 +554,7 @@ class Gragrid extends GFFeedAddOn {
 	// # HELPERS ----------------------------------------------------
 
 	/**
-	 * Initializes SendGrid API if credentials are valid.
+	 * Initializes Mautic API if credentials are valid.
 	 *
 	 * @since 1.0.0
 	 *
@@ -577,9 +564,8 @@ class Gragrid extends GFFeedAddOn {
 	 * @uses Gragrid_API::valid_key()
 	 *
 	 * @access public
-	 * @param string $api_key Mautic Public API key.
-	 * @param string $private_key Mautic Private API key.
-	 * @param string $redirect_url Mautic Redirect URL.
+	 * @param string $mautic_username Mautic username.
+	 * @param string $mautic_password Mautic password.
 	 * @return bool|null
 	 */
 	public function init_api( $mautic_username = null, $mautic_password = null) {

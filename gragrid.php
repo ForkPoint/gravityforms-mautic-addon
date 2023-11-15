@@ -1,15 +1,15 @@
 <?php
 /**
- * Gragrid: Gravity Forms + SendGrid
+ * Gragrid: Gravity Forms + Mautic
  *
  * @package           Gragrid
  * @author            Vladimir Contreras
  * @license           GPL-2.0-or-later
  *
  * @wordpress-plugin
- * Plugin Name:       Gragrid: Gravity Forms + SendGrid
+ * Plugin Name:       Gragrid: Gravity Forms + Mautic
  * Plugin URI:        https://github.com/vlasscontreras/gragrid
- * Description:       Integrates Gravity Forms with SendGrid, allowing form submissions to be automatically sent to your SendGrid contact lists.
+ * Description:       Integrates Gravity Forms with Mautic, allowing form submissions to be automatically sent to your Mautic contact lists.
  * Version:           2.2.2
  * Requires at least: 5.2
  * Requires PHP:      7.3
@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'GRAGRID_VERSION', '2.2.2' );
 
 /**
- * If the Feed Add-On Framework exists, SendGrid Add-On is loaded.
+ * If the Feed Add-On Framework exists, Mautic Add-On is loaded.
  *
  * @since 1.0.0
  */
