@@ -4,10 +4,12 @@ class Gragrid_API {
 
 	protected $mautic_username;
 	protected $mautic_password;
+	protected $mautic_url;
 
-	public function __construct( $mautic_username = '', $mautic_password = '') {
+	public function __construct( $mautic_username = '', $mautic_password = '', $mautic_url = '') {
 		$this->mautic_username = $mautic_username;
 		$this->mautic_password = $mautic_password;
+		$this->mautic_url = $mautic_url;
 	}
 
 	/**
@@ -115,7 +117,7 @@ class Gragrid_API {
 			return new WP_Error( __METHOD__, esc_html__( 'API key must be defined to process an API request.', 'gragrid' ) );
 		}
 
-		$request_url = 'https://hello.forkpoint.com/api/' . $path;
+		$request_url = $this->mautic_url . '/api/' . $path;
 
 		// Add request URL parameters if needed.
 		if ( 'GET' === $method && ! empty( $data ) ) {

@@ -184,6 +184,13 @@ class Gragrid extends GFFeedAddOn {
 						'type'              => 'text',
 						'class'             => 'medium',
 						'feedback_callback' => array( $this, 'init_api' ),
+					),
+					array(
+						'name'              => 'mautic_url',
+						'label'             => esc_html__( 'Mautic Base URL (ex. https://example.com)', 'gragrid' ),
+						'type'              => 'text',
+						'class'             => 'medium',
+						'feedback_callback' => array( $this, 'init_api' ),
 					)
 				),
 			),
@@ -576,15 +583,16 @@ class Gragrid extends GFFeedAddOn {
 
 		$mautic_username = $this->get_plugin_setting( 'mautic_username' );
 		$mautic_password = $this->get_plugin_setting( 'mautic_password' );
+		$mautic_url = $this->get_plugin_setting( 'mautic_url' );
 
-		if ( rgblank( $mautic_username ) || rgblank( $mautic_password )) {
+		if ( rgblank( $mautic_username ) || rgblank( $mautic_password ) || rgblank( $mautic_url )) {
 			return null;
 		}
 
 		$this->log_debug( __METHOD__ . '(): Validating API key.' );
 
 		try {
-			$this->api = new Gragrid_API( $mautic_username, $mautic_password );
+			$this->api = new Gragrid_API( $mautic_username, $mautic_password, $mautic_url );
 
 			if ( $this->api->valid_key() ) {
 				$this->log_debug( __METHOD__ . '(): Mautic successfully authenticated.' );
