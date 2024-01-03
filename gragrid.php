@@ -1,20 +1,20 @@
 <?php
 /**
- * Gragrid: Gravity Forms + Mautic
+ * Grautic: Gravity Forms + Mautic
  *
- * @package           Gragrid
- * @author            Vladimir Contreras
+ * @package           Grautic
+ * @author            ForkPoint
  * @license           GPL-2.0-or-later
  *
  * @wordpress-plugin
- * Plugin Name:       Gragrid: Gravity Forms + Mautic
- * Plugin URI:        https://github.com/vlasscontreras/gragrid
+ * Plugin Name:       Grautic: Gravity Forms + Mautic
+ * Plugin URI:        https://github.com/ForkPoint/gravityforms-mautic-addon/tree/develop
  * Description:       Integrates Gravity Forms with Mautic, allowing form submissions to be automatically sent to your Mautic contact lists.
  * Version:           2.2.2
  * Requires at least: 5.2
  * Requires PHP:      7.3
- * Author:            Vladimir Contreras
- * Author URI:        https://github.com/vlasscontreras
+ * Author:            ForkPoint
+ * Author URI:        https://github.com/ForkPoint
  * Text Domain:       gragrid
  * Domain Path:       /languages
  * License:           GPL v2 or later
